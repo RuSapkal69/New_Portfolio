@@ -96,7 +96,20 @@ function App() {
         subtitle="Our New State-of-the-Art Studio facility outside of Prague."
         imageUrl="/placeholder.svg?height=400&width=600"
       />
+
+      <section className="h-[200vh] relative">
+        <div className="sticky top-0 h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/universe-end.jpg')" }}>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <h1 className="text-6xl text-white font-bold animate-fade-in-up">
+              Welcome to the New Galaxy
+            </h1>
+           </div>
+         </div>
+      </section>
+
     </div>
+    
+    
   )
 }
 
