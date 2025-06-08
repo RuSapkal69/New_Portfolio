@@ -23,63 +23,56 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (isLoading) return
+  if (isLoading) return;
 
-    const ctx = gsap.context(() => {
-      // Main scroll animation timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 1,
-          pin: true,
-          pinSpacing: true,
-        },
-      })
+  const ctx = gsap.context(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "+=4000", // longer scroll distance
+        scrub: 1,
+        pin: true,
+      },
+    });
 
-      // Animation sequence
-      tl.to(".hero-cube", {
-        scale: 1.5,
-        opacity: 0.8,
+    // 👇 Smooth transition of hero elements
+    tl.to(".hero-cube", {
+      scale: 2,
+      opacity: 1,
+      duration: 2,
+      ease: "power3.inOut",
+    })
+      .to(".hero-logo", {
+        scale: 0.8,
+        opacity: 0,
+        duration: 1,
+      }, "<")
+      .to(".hero-cube", {
+        scale: 0,
+        opacity: 0,
+        duration: 1,
+      }, "<")
+
+      // 👇 Fade in frames
+      .from(".frame-section", {
+        opacity: 0,
+        scale: 0.9,
+        y: 100,
         duration: 2,
-      })
-        .to(
-          ".hero-logo",
-          {
-            scale: 0.8,
-            opacity: 0,
-            duration: 1,
-          },
-          "<",
-        )
-        .to(".hero-cube", {
-          scale: 0.5,
-          opacity: 0,
-          duration: 1,
-        })
-        .from(
-          ".frame-container",
-          {
-            opacity: 0,
-            scale: 0.8,
-            duration: 2,
-          },
-          "-=0.5",
-        )
-        .from(
-          ".content-frame",
-          {
-            opacity: 0,
-            scale: 0.8,
-            duration: 1,
-          },
-          "-=0.5",
-        )
-    }, containerRef)
+        ease: "power3.out",
+      }, "-=1")
+      .from(".content-frame", {
+        opacity: 0,
+        scale: 0.8,
+        duration: 1.5,
+        ease: "power2.out",
+      }, "-=1");
+  }, containerRef);
 
-    return () => ctx.revert()
-  }, [isLoading])
+  return () => ctx.revert();
+  }, [isLoading]);
+
 
   if (isLoading) {
     return (
