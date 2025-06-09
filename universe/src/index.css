@@ -2,17 +2,130 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes fade-in-up {
+/* Performance optimized cube styles */
+.cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: rotate 25s infinite linear;
+  will-change: transform; /* Optimize for animations */
+}
+
+/* Radial gradient utility */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
+
+/* Simplified cube faces for better performance */
+.cube-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #4d9fff;
+  opacity: 0.8;
+  box-shadow: 0 0 20px rgba(77, 159, 255, 0.6), 0 0 40px rgba(77, 159, 255, 0.3);
+  background: rgba(77, 159, 255, 0.05);
+  will-change: transform; /* Optimize for animations */
+}
+
+.cube-face.front {
+  transform: translateZ(60px);
+}
+
+.cube-face.back {
+  transform: translateZ(-60px) rotateY(180deg);
+}
+
+.cube-face.right {
+  transform: rotateY(90deg) translateZ(60px);
+}
+
+.cube-face.left {
+  transform: rotateY(-90deg) translateZ(60px);
+}
+
+.cube-face.top {
+  transform: rotateX(90deg) translateZ(60px);
+}
+
+.cube-face.bottom {
+  transform: rotateX(-90deg) translateZ(60px);
+}
+
+@keyframes rotate {
   from {
-    opacity: 0;
-    transform: translateY(60px);
+    transform: rotateX(0) rotateY(0) rotateZ(0);
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
   }
 }
 
-.animate-fade-in-up {
-  animation: fade-in-up 2s ease-out forwards;
+/* Media queries for responsive cube */
+@media (max-width: 768px) {
+  .cube-face.front,
+  .cube-face.back {
+    transform: translateZ(40px);
+  }
+
+  .cube-face.back {
+    transform: translateZ(-40px) rotateY(180deg);
+  }
+
+  .cube-face.right {
+    transform: rotateY(90deg) translateZ(40px);
+  }
+
+  .cube-face.left {
+    transform: rotateY(-90deg) translateZ(40px);
+  }
+
+  .cube-face.top {
+    transform: rotateX(90deg) translateZ(40px);
+  }
+
+  .cube-face.bottom {
+    transform: rotateX(-90deg) translateZ(40px);
+  }
+}
+
+/* Optimized menu styles */
+.hamburger.open span:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+.menu-overlay {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Performance optimizations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hero-section {
+  transform: translateZ(0); /* Force hardware acceleration */
+  backface-visibility: hidden;
+}
+
+.star {
+  will-change: transform;
+  backface-visibility: hidden;
 }
