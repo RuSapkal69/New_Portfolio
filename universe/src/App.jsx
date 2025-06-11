@@ -1,171 +1,131 @@
-"use client"
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Parallax, ParallaxLayer } from "@react-spring/parallax";
+import Header from "./components/Header";
+import HeroSection from "./components/HeroSection";
+import Home from "./components/Home";
+import EarthModel from "./components/EarthModel";
+import "./index.css";
 
-import { useEffect, useRef, useState } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-import Header from "./components/Header"
-import HeroSection from "./components/HeroSection"
-import "./index.css"
-
-gsap.registerPlugin(ScrollTrigger)
+gsap.ticker.fps(24); // Limit FPS for performance
+gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.config({ limitCallbacks: true, syncInterval: 150 });
 
 function App() {
-  const containerRef = useRef(null)
-  const heroRef = useRef(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const parallaxRef = useRef(null);
+  const loadingRef = useRef(null);
+  const videoRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
-    return () => clearTimeout(timer)
-  }, [])
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
-    if (isLoading) return
+    if (!isLoading && loadingRef.current && videoRef.current) {
+      const loadingElement = loadingRef.current;
+      const videoElement = videoRef.current;
 
-    const ctx = gsap.context(() => {
-      // Main scroll timeline optimized for performance
-      const mainTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=300%",
-          scrub: 1.5,
-          pin: true,
-          anticipatePin: 1,
-        },
-      })
+      loadingElement.style.willChange = "opacity, transform";
+      videoElement.style.willChange = "opacity, transform";
 
-      // Smooth cube scaling - cover entire screen while staying visible
-      mainTl
-        .to(".hero-cube", {
-          scale: 6,
-          z: 800,
-          opacity: 1, // Keep fully visible
-          duration: 1.5,
-          ease: "power2.inOut",
-        })
-        .to(".hero-cube", {
-          scale: 12,
-          z: 1200,
-          opacity: 1, // Still fully visible
-          duration: 1.5,
-          ease: "power2.inOut",
-        })
-        .to(".hero-cube", {
-          scale: 25,
-          z: 1800,
-          opacity: 1, // Cube covers entire screen, still visible
-          duration: 2,
-          ease: "power2.inOut",
-        })
-        .to(
-          ".white-fog",
-          {
-            opacity: 0.95, // Fog covers the cube simultaneously
-            duration: 2,
-            ease: "power2.inOut",
-          },
-          "<", // Start at the same time as the large cube scaling
-        )
-        .to(".hero-cube", {
-          scale: 35,
-          z: 2500,
-          opacity: 0, // Only fade out when cube is massive and fog is covering
-          duration: 1,
-          ease: "power2.inOut",
-        })
-        .to(
-          ".hero-content > div:first-child",
-          {
-            opacity: 0,
-            z: -500,
-            scale: 0.8,
-            duration: 3,
-            ease: "power2.inOut",
-          },
-          "-=5", // Start earlier but take longer
-        )
-        .to(
-          ".hero-content > div:nth-child(2)",
-          {
-            opacity: 0,
-            z: -500,
-            scale: 0.8,
-            duration: 3,
-            ease: "power2.inOut",
-          },
-          "-=5", // Start earlier but take longer
-        )
-        .to(
-          ".scroll-indicator",
-          {
-            opacity: 0,
-            y: 50,
-            duration: 2,
-            ease: "power2.out",
-          },
-          "-=4",
-        )
-        .to(
-          ".hero-section",
-          {
-            backgroundImage: "url('/universe.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            duration: 0.5,
-            ease: "none",
-          },
-          "-=1",
-        )
-        .to(
-          ".ambient-glow",
-          {
-            opacity: 0,
-            duration: 1.5,
-            ease: "power2.out",
-          },
-          "<",
-        )
-        .to(
-          ".star",
-          {
-            opacity: 0,
-            duration: 1.5,
-            ease: "power2.out",
-          },
-          "<",
-        )
-    }, containerRef)
+      const ctx = gsap.context(() => {
+        gsap.set("*", { clearProps: "animation" });
 
-    return () => ctx.revert()
-  }, [isLoading])
+        const tl = gsap.timeline({
+          defaults: { ease: "power1.out", force3D: true },
+          onStart: () => {
+            document.body.style.overflow = "hidden";
+          },
+          onComplete: () => {
+            loadingElement.style.display = "none";
+            loadingElement.style.willChange = "auto";
+            videoElement.style.willChange = "auto";
+            document.body.style.overflow = "auto";
+          }
+        });
+
+        tl.to(loadingElement, { opacity: 0, duration: 0.8 }, "start");
+        tl.to(videoElement, { opacity: 1, duration: 1 }, "start+=0.3");
+      });
+
+      return () => ctx.revert();
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-black flex justify-center items-center z-50">
-        <div className="text-5xl font-bold text-white animate-pulse">RUSHIKESH</div>
+      <div
+        ref={loadingRef}
+        className="loading-screen fixed inset-0 bg-black flex justify-center items-center z-50"
+      >
+        <div className="text-4xl md:text-5xl font-medium text-white animate-pulse">
+          Rushikesh
+        </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="relative h-[400vh] bg-black text-white overflow-x-hidden" ref={containerRef}>
+    <div className="relative bg-black text-white overflow-x-hidden">
       <Header />
-      <div ref={heroRef}>
-        <HeroSection />
-      </div>
-      {/* Realistic white fog overlay */}
-      <div className="white-fog fixed inset-0 opacity-0 z-30 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-radial from-transparent via-white/40 to-white/90"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/60 to-white/30"></div>
-        <div className="absolute inset-0 bg-gradient-to-tl from-white/10 via-white/50 to-white/20"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-      </div>
+      <Parallax ref={parallaxRef} pages={2}>
+        <ParallaxLayer offset={0} speed={0.1} className="z-0">
+          <HeroSection ref={videoRef} />
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-6 z-20">
+            <div className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-wider bg-gradient-to-r from-blue-400 via-white to-purple-400 bg-clip-text text-transparent drop-shadow-2xl">
+              RUSHIKESH
+            </div>
+            <div className="flex items-center justify-center space-x-4">
+              <span className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider bg-gradient-to-r from-blue-400 via-white to-purple-400 bg-clip-text text-transparent drop-shadow-2xl">
+                PORTFOLI
+              </span>
+              <div className="relative w-[120px] h-[120px] md:w-[150px] md:h-[150px]">
+                <EarthModel performance="low" />
+              </div>
+            </div>
+          </div>
+        </ParallaxLayer>
+
+        <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 text-white/90 z-30">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="px-6 py-2 border border-white/30 rounded-full backdrop-blur-sm bg-white/5 hover:bg-white/10 transition-all duration-300">
+              <span className="text-sm tracking-widest font-light">
+                SCROLL TO ENTER
+              </span>
+            </div>
+            <svg
+              className="w-6 h-6 animate-bounce"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <ParallaxLayer offset={1} speed={0.1} className="z-10">
+          <div
+            className="w-full h-full bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: "url('./assets/images/universe.jpg')" }}
+          >
+            <div className="w-full h-full bg-black/30">
+              <Home />
+            </div>
+          </div>
+        </ParallaxLayer>
+      </Parallax>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

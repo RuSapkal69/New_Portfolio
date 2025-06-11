@@ -2,92 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Performance optimized cube styles */
-.cube {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: rotate 25s infinite linear;
-  will-change: transform; /* Optimize for animations */
+
+html,
+:host {
+    -webkit-text-size-adjust: 100%;
 }
 
-/* Radial gradient utility */
-.bg-gradient-radial {
-  background: radial-gradient(circle, var(--tw-gradient-stops));
+/* Gradient animation for text */
+@keyframes gradient-x {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
-/* Simplified cube faces for better performance */
-.cube-face {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border: 2px solid #4d9fff;
-  opacity: 0.8;
-  box-shadow: 0 0 20px rgba(77, 159, 255, 0.6), 0 0 40px rgba(77, 159, 255, 0.3);
-  background: rgba(77, 159, 255, 0.05);
-  will-change: transform; /* Optimize for animations */
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
 }
 
-.cube-face.front {
-  transform: translateZ(60px);
-}
-
-.cube-face.back {
-  transform: translateZ(-60px) rotateY(180deg);
-}
-
-.cube-face.right {
-  transform: rotateY(90deg) translateZ(60px);
-}
-
-.cube-face.left {
-  transform: rotateY(-90deg) translateZ(60px);
-}
-
-.cube-face.top {
-  transform: rotateX(90deg) translateZ(60px);
-}
-
-.cube-face.bottom {
-  transform: rotateX(-90deg) translateZ(60px);
-}
-
-@keyframes rotate {
+/* Slow spin animation for Earth */
+@keyframes spin-slow {
   from {
-    transform: rotateX(0) rotateY(0) rotateZ(0);
+    transform: rotate(0deg);
   }
   to {
-    transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+    transform: rotate(360deg);
   }
 }
 
-/* Media queries for responsive cube */
-@media (max-width: 768px) {
-  .cube-face.front,
-  .cube-face.back {
-    transform: translateZ(40px);
-  }
-
-  .cube-face.back {
-    transform: translateZ(-40px) rotateY(180deg);
-  }
-
-  .cube-face.right {
-    transform: rotateY(90deg) translateZ(40px);
-  }
-
-  .cube-face.left {
-    transform: rotateY(-90deg) translateZ(40px);
-  }
-
-  .cube-face.top {
-    transform: rotateX(90deg) translateZ(40px);
-  }
-
-  .cube-face.bottom {
-    transform: rotateX(-90deg) translateZ(40px);
-  }
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
 }
 
 /* Optimized menu styles */
@@ -115,17 +63,27 @@
 }
 
 /* Performance optimizations */
-* {
+/* * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+} */
 
 .hero-section {
-  transform: translateZ(0); /* Force hardware acceleration */
+  transform: translateZ(0);
   backface-visibility: hidden;
 }
 
-.star {
-  will-change: transform;
-  backface-visibility: hidden;
+/* Loading screen pulse animation */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
