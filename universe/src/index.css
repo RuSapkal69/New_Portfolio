@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
+/* html,
 :host {
     -webkit-text-size-adjust: 100%;
-}
+} */
 
 /* Gradient animation for text */
 @keyframes gradient-x {
